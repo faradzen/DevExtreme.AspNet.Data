@@ -14,6 +14,8 @@
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -66,13 +68,13 @@
     <Folder Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\DevExtreme.AspNet.Data\DevExtreme.AspNet.Data.csproj">
-      <Project>{f91204f2-1f3a-433f-871d-5f31b769fa90}</Project>
-      <Name>DevExtreme.AspNet.Data</Name>
-    </ProjectReference>
     <ProjectReference Include="..\DevExtreme.AspNet.Data.Tests.Common\DevExtreme.AspNet.Data.Tests.Common.csproj">
       <Project>{f5878ad6-459f-4fce-9bfb-54ee94d2083f}</Project>
       <Name>DevExtreme.AspNet.Data.Tests.Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\DevExtreme.AspNet.Data\DevExtreme.AspNet.Data.csproj">
+      <Project>{f91204f2-1f3a-433f-871d-5f31b769fa90}</Project>
+      <Name>DevExtreme.AspNet.Data</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
@@ -84,6 +86,7 @@
     <Compile Include="Bug235.cs" />
     <Compile Include="Bug239.cs" />
     <Compile Include="Bug240.cs" />
+    <Compile Include="Bug_FindInList.cs" />
     <Compile Include="SelectNotMapped.cs" />
     <Compile Include="TestDbContext.cs" />
     <Compile Include="Bug112.cs" />

@@ -22,7 +22,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DevExtreme.AspNet.Data.Test
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DevExtreme.AspNet.Data.Tests.EFCore1", "DevExtreme.AspNet.Data.Tests.EFCore1\DevExtreme.AspNet.Data.Tests.EFCore1.csproj", "{215EE7D0-0E2B-4A07-810F-9224F0C5021F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DevExtreme.AspNet.Data.Tests.Common", "DevExtreme.AspNet.Data.Tests.Common\DevExtreme.AspNet.Data.Tests.Common.csproj", "{F5878AD6-459F-4FCE-9BFB-54EE94D2083F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DevExtreme.AspNet.Data.Tests.Common", "DevExtreme.AspNet.Data.Tests.Common\DevExtreme.AspNet.Data.Tests.Common.csproj", "{F5878AD6-459F-4FCE-9BFB-54EE94D2083F}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DevExtreme.AspNet.Data.Tests.EFCore2", "DevExtreme.AspNet.Data.Tests.EFCore2\DevExtreme.AspNet.Data.Tests.EFCore2.csproj", "{03F66C05-DB87-483C-B96D-567EC4C6BF5C}"
 EndProject
@@ -67,5 +67,8 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {3431A8D9-A7B4-4490-B146-B94A3DEE7A2C}
 	EndGlobalSection
 EndGlobal

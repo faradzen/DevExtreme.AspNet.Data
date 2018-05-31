@@ -58,10 +58,21 @@ namespace DevExtreme.AspNet.Data.Tests.EF6 {
 
                 context.SaveChanges();
 
-                var filter = new List<object> { "Items", new List<object> { "Id", ">", "1" } };
+                // we implement "any" operator for search in collections
+                var filter = new List<object> { "Items", "any", new List<object> { "Id", ">", "1" } };
                 var loadResult = DataSourceLoader.Load(dbSet, new SampleLoadOptions {
                     Filter = filter
                 });
+
+                /*// 2nd variant: by prepare expression
+                    var queryableData = objectSpace.GetObjectsQuery<ServiceDeskRequest>();
+                    var parameter = Expression.Parameter(typeof(ServiceDeskRequest), "A");
+                    var expression = GetNavigationPropertyExpression(parameter, someUserOid, "Group", "Individuals", "Oid");
+                    var whereCallExpression = Expression.Call(
+                        typeof(Queryable), "Where", new Type[] { queryableData.ElementType }, queryableData.Expression, expression);
+                    var results = queryableData.Provider.CreateQuery<ServiceDeskRequest>(whereCallExpression).Take(10);
+                    foreach (ServiceDeskRequest item in results)
+                        Console.WriteLine(item);*/
 
                 var data = (IEnumerable<Bug_FindInList_DataItemA>)loadResult.data;
                 var dataCount = data.Count();

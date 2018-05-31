@@ -16,10 +16,17 @@ namespace DevExtreme.AspNet.Data {
             STARTS_WITH = "startswith",
             ENDS_WITH = "endswith";
 
+        private readonly FilterAggregateExpressionCompiler _aggregateCompiler = new FilterAggregateExpressionCompiler();
+
         public FilterExpressionCompiler(bool guardNulls)
             : base(guardNulls) {
         }
 
+        /// <summary>
+        /// main method for prepare expression from criteria
+        /// </summary>
+        /// <param name="criteriaJson"></param>
+        /// <returns></returns>
         public LambdaExpression Compile(IList criteriaJson) {
             var dataItemExpr = CreateItemParam(typeof(T));
             return Expression.Lambda(CompileCore(dataItemExpr, criteriaJson), dataItemExpr);
@@ -33,13 +40,51 @@ namespace DevExtreme.AspNet.Data {
                 return CompileUnary(dataItemExpr, criteriaJson);
             }
 
+            if(IsAggregate(criteriaJson))
+                return CompileAggregate(dataItemExpr, criteriaJson);
+
             return CompileBinary(dataItemExpr, criteriaJson);
+        }
+
+        Expression CompileAggregate(ParameterExpression dataItemExpr, IList criteriaJson) {
+            // var clientOperation = Convert.ToString(criteriaJson[1]).ToLower();
+            var clientAccessor = Convert.ToString(criteriaJson[0]);
+            var clientCriteria = criteriaJson[2];
+            var clientCriteriaList = criteriaJson[2] as IList;
+
+            if(clientCriteriaList == null || clientCriteriaList.Count != 3 && clientCriteriaList[1] != "=") {
+                throw new NotImplementedException($"not implemented parsing for filters as: {clientCriteriaList}");
+            }
+            var navPath = clientAccessor.Split('.').ToList();
+            var innerPath = ((string)clientCriteriaList[0]).Split('.').ToList();
+            navPath.AddRange(innerPath);
+
+            var accessorExpr = CompileAccessorExpression(dataItemExpr, Convert.ToString(clientCriteriaList[0]));            
+            var keyOid = clientCriteriaList[2];
+
+            try {
+                keyOid = Utils.ConvertClientValue(keyOid, accessorExpr.Type);
+            } catch {
+                return Expression.Constant(false);
+            }
+
+            var expression = navPath.Count == 1
+                ? _aggregateCompiler.GetNavigationPropertyExpression(dataItemExpr, keyOid, accessorExpr.Type, navPath[0])
+                : navPath.Count == 2
+                    ? _aggregateCompiler.GetNavigationPropertyExpression(dataItemExpr, keyOid, accessorExpr.Type, navPath[0], navPath[1])
+                    : _aggregateCompiler.GetNavigationPropertyExpression(dataItemExpr, keyOid, accessorExpr.Type, navPath[0], navPath[1], navPath[2]);
+
+            // GetNavigationPropertyExpression works only for NET 4 
+            if(expression == null)
+                return Expression.Equal(Expression.Constant(true), Expression.Constant(false));
+            return expression;
         }
 
         Expression CompileBinary(ParameterExpression dataItemExpr, IList criteriaJson) {
             var hasExplicitOperation = criteriaJson.Count > 2;
 
             var clientAccessor = Convert.ToString(criteriaJson[0]);
+            // if operator in binary is not set ["fieldName","value"] then set celintOperation as "="
             var clientOperation = hasExplicitOperation ? Convert.ToString(criteriaJson[1]).ToLower() : "=";
             var clientValue = criteriaJson[hasExplicitOperation ? 2 : 1];
             var isStringOperation = clientOperation == CONTAINS || clientOperation == NOT_CONTAINS || clientOperation == STARTS_WITH || clientOperation == ENDS_WITH;
@@ -97,6 +142,10 @@ namespace DevExtreme.AspNet.Data {
 
         }
 
+        /// <summary> it is comparision operation
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
         bool IsInequality(ExpressionType type) {
             return type == ExpressionType.LessThan || type == ExpressionType.LessThanOrEqual || type == ExpressionType.GreaterThanOrEqual || type == ExpressionType.GreaterThan;
         }
@@ -193,6 +242,10 @@ namespace DevExtreme.AspNet.Data {
 
         bool IsCriteria(object item) {
             return item is IList && !(item is String);
+        }
+
+        bool IsAggregate(IList criteriaJson) {
+            return criteriaJson[1] is string s && s == "any";
         }
 
         internal bool IsUnary(IList criteriaJson) {

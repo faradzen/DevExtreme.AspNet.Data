@@ -52,7 +52,7 @@ namespace DevExtreme.AspNet.Data.Tests {
                 + ".GroupBy(obj => new AnonType`2(I0 = obj.G1, I1 = obj.G2))"
                 + ".OrderBy(g => g.Key.I0)"
                 + ".ThenByDescending(g => g.Key.I1)"
-                + ".Select(g => new AnonType`16() {"
+                + ".Select(g => new AnonType`16("
 
                 // count
                 + "I0 = g.Count(), "
@@ -71,12 +71,12 @@ namespace DevExtreme.AspNet.Data.Tests {
 
                 // group summary
                 // (count skipped)
-                + "I8 = g.Sum(obj => obj.Nullable), "               // avg sum
-                + "I9 = g.Count(obj => (obj.Nullable != null)), "   // avg count
+                + "I8 = g.Sum(obj => obj.Nullable), "                               // avg sum
+                + "I9 = g.Select(obj => IIF((obj.Nullable != null), 1, 0)).Sum(), " // avg count
                 + "I10 = g.Max(obj => obj.Nullable), "
                 + "I11 = g.Min(obj => obj.Nullable), "
                 + "I12 = g.Sum(obj => obj.Nullable)"
-                + "})",
+                + "))",
                 expr.ToString()
             );
         }
@@ -87,7 +87,7 @@ namespace DevExtreme.AspNet.Data.Tests {
             Assert.Equal(
                 "data"
                     + ".GroupBy(obj => new AnonType())"
-                    + ".Select(g => new AnonType`1() {I0 = g.Count()})",
+                    + ".Select(g => new AnonType`1(I0 = g.Count()))",
                 expr.ToString()
             );
         }

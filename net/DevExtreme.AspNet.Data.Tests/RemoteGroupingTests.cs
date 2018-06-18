@@ -327,9 +327,29 @@ namespace DevExtreme.AspNet.Data.Tests {
             });
 
             Assert.Equal(
-                new object[] { null, null, null, null, 0 },
+                new object[] { 0m /* SumFix */, null, null, null, 0 },
                 loadResult.summary
             );
+        }
+
+        [Fact]
+        public void Summary_Average_EmptyWithZeroSum() {
+            // Remote SUM is not necessary NULL for empty sets
+            // https://github.com/aspnet/EntityFrameworkCore/issues/12307
+
+            var result = RemoteGrouping.RemoteGroupTransformer.Run(
+                typeof(Object),
+                new[] { new Types.AnonType<int, int, int, int>(
+                    0, // count
+                    0, // sum
+                    0  // count not null
+                ) },
+                0,
+                new[] { new SummaryInfo { SummaryType = "avg" } },
+                null
+            );
+
+            Assert.Null(result.Totals[0]);
         }
 
     }
